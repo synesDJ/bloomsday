@@ -10,6 +10,19 @@ the garden is never finished. it belongs to everyone who has ever visited.
 
 ---
 
+## running locally
+
+this project is a static browser app. run it from a local web server so ES modules, camera permissions, and CDN-loaded audio/gesture libraries work correctly.
+
+```bash
+cd bloomsday
+python3 -m http.server 8000
+```
+
+then open `http://localhost:8000` in a browser and allow camera access when prompted. internet access is needed for the CDN dependencies used by Tone.js and MediaPipe.
+
+---
+
 ## core experience flow
 
 ```
@@ -340,4 +353,3 @@ a-common-bloom/
 - [ ] performance optimization (max 80 flowers, cull oldest)
 - [ ] accessibility: keyboard fallback for all gestures
 - [ ] OG image + share card
-
