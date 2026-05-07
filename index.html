@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>a common bloom</title>
+  <meta name="description" content="a shared digital garden grown by hands." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body class="in-landing realm-blues">
+
+  <!-- ————————————————————————————————————————
+       LANDING VIEW (shown while body.in-landing)
+       ———————————————————————————————————————— -->
+  <section class="landing-view">
+    <h1>a common bloom</h1>
+
+    <div class="realm-toggle" aria-label="choose realm">
+      <button class="realm-btn active" type="button" data-realm="blues">bloom of blues</button>
+      <button class="realm-btn" type="button" data-realm="pentatonic">pentatonic pasture</button>
+    </div>
+
+    <button type="button" class="cta" id="enter-btn">
+      <span class="cta-text">enter the garden</span>
+      <span class="cta-arrow" aria-hidden="true">→</span>
+    </button>
+
+    <p class="cam-prompt" id="cam-prompt" aria-live="polite"></p>
+
+    <!-- decorative corner flowers — fade out once the camera preview appears -->
+    <div class="corner-bouquet" id="corner-bouquet" aria-hidden="true">
+      <div class="stem cherry"    style="--h: 140px; --delay: 0s"><div class="bulb"></div></div>
+      <div class="stem iris"      style="--h: 210px; --delay: .6s"><div class="bulb tall"></div></div>
+      <div class="stem lotus"     style="--h: 120px; --delay: 1.2s"><div class="bulb small"></div></div>
+      <div class="stem dandelion" style="--h: 170px; --delay: 1.8s"><div class="bulb"></div></div>
+    </div>
+  </section>
+
+  <!-- ————————————————————————————————————————
+       GARDEN VIEW (shown while body.in-garden)
+       ———————————————————————————————————————— -->
+  <div class="garden-page">
+
+    <header class="meta-header">
+      <button class="realm-back" id="realm-back" type="button" aria-label="back to realm selection">
+        <span aria-hidden="true">←</span>
+        <span>realms</span>
+      </button>
+      <div class="title">a common bloom</div>
+      <div class="counts">
+        <span id="count-total">0</span> flowers in the garden ·
+        <span id="count-types">0</span> types present
+      </div>
+    </header>
+
+    <div class="garden-controls">
+      <label class="loop-switch">
+        <span class="loop-switch-copy">
+          <span class="loop-switch-title">flower loops</span>
+          <span class="loop-switch-state" id="loop-switch-state">on</span>
+        </span>
+        <input id="loop-toggle" type="checkbox" role="switch" checked aria-label="toggle automatic flower loops" />
+        <span class="loop-switch-track" aria-hidden="true">
+          <span class="loop-switch-thumb"></span>
+        </span>
+      </label>
+      <div class="hardware-bridge">
+        <button class="serial-btn" id="serial-connect" type="button">connect lights</button>
+        <span class="serial-status" id="serial-status">not connected</span>
+      </div>
+    </div>
+
+    <button class="info-btn" id="info-btn" aria-label="how to grow a flower" aria-expanded="false">
+      <span class="info-glyph">i</span>
+    </button>
+
+    <canvas id="garden-canvas"></canvas>
+
+    <aside class="selector" aria-label="pick your flower">
+      <div class="label">pick your flower</div>
+      <div class="swatches">
+        <button class="swatch cherry active" data-flower="cherry_blossom" aria-label="cherry blossom">
+          <span class="oval"></span>
+          <span class="name">cherry blossom</span>
+        </button>
+        <button class="swatch iris" data-flower="iris" aria-label="iris">
+          <span class="oval"></span>
+          <span class="name">iris</span>
+        </button>
+        <button class="swatch lotus" data-flower="lotus" aria-label="lotus">
+          <span class="oval"></span>
+          <span class="name">lotus</span>
+        </button>
+        <button class="swatch wild" data-flower="wildflower" aria-label="wildflower">
+          <span class="oval"></span>
+          <span class="name">wildflower</span>
+        </button>
+        <button class="swatch dandelion" data-flower="dandelion" aria-label="dandelion">
+          <span class="oval"></span>
+          <span class="name">dandelion</span>
+        </button>
+        <button class="swatch sunflower" data-flower="sunflower" aria-label="sunflower">
+          <span class="oval"></span>
+          <span class="name">sunflower</span>
+        </button>
+        <button class="swatch rose" data-flower="rose" aria-label="rose">
+          <span class="oval"></span>
+          <span class="name">rose</span>
+        </button>
+        <button class="swatch orchid" data-flower="orchid" aria-label="orchid">
+          <span class="oval"></span>
+          <span class="name">orchid</span>
+        </button>
+        <button class="swatch tulip" data-flower="tulip" aria-label="tulip">
+          <span class="oval"></span>
+          <span class="name">tulip</span>
+        </button>
+        <button class="swatch poppy" data-flower="poppy" aria-label="poppy">
+          <span class="oval"></span>
+          <span class="name">poppy</span>
+        </button>
+        <button class="swatch pink-lily" data-flower="pink_lily" aria-label="pink lily">
+          <span class="oval"></span>
+          <span class="name">pink lily</span>
+        </button>
+        <button class="swatch moon-iris" data-flower="moon_iris" aria-label="moon iris">
+          <span class="oval"></span>
+          <span class="name">moon iris</span>
+        </button>
+      </div>
+      <div class="voice-selector" aria-label="choose sound">
+        <button class="voice-btn active" type="button" data-voice="guitar">guitar</button>
+        <button class="voice-btn" type="button" data-voice="flute">flute</button>
+        <button class="voice-btn" type="button" data-voice="synth">synth</button>
+      </div>
+    </aside>
+
+    <div class="hint" id="hint" aria-live="polite"></div>
+    <button class="reset-garden" id="reset-garden" type="button" aria-label="reset garden" title="reset garden">
+      <span aria-hidden="true">↺</span>
+    </button>
+    <div class="trash-bin" id="trash-bin" aria-label="drag flowers here to delete">
+      <span class="trash-lid"></span>
+      <span class="trash-body"></span>
+    </div>
+
+    <!-- corner gesture-zone labels: subtle hint of which hand does what -->
+    <div class="zone-label zone-grow"   aria-hidden="true">right pinch · grow</div>
+    <div class="zone-label zone-bloom"  aria-hidden="true">left pinch · bloom</div>
+    <div class="zone-label zone-pluck"  aria-hidden="true">right fist · pluck<br/>open hand · plant</div>
+
+    <!-- compact info overlay (anchored under the (i) button) -->
+    <section class="info-overlay" id="info-overlay" aria-hidden="true">
+      <div class="info-arrow" aria-hidden="true"></div>
+      <h3 class="info-title">how to grow a flower</h3>
+      <ol class="gesture-legend">
+        <li class="step">
+          <span class="step-num">01</span>
+          <div class="step-body">
+            <span class="step-label">right pinch · grow</span>
+            <span class="step-desc">slowly open your right thumb &amp; index. the stem rises with the gap.</span>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">02</span>
+          <div class="step-body">
+            <span class="step-label">left pinch · bloom</span>
+            <span class="step-desc">left thumb &amp; index opens the petals once the stem is grown.</span>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">03</span>
+          <div class="step-body">
+            <span class="step-label">right fist · pluck</span>
+            <span class="step-desc">close your right hand to pick up the bloom and carry it.</span>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">04</span>
+          <div class="step-body">
+            <span class="step-label">open hand · plant</span>
+            <span class="step-desc">open your right hand again. the flower stays in the garden.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- fortune scroll overlay -->
+    <div class="fortune-overlay" id="fortune-overlay">
+      <div class="scroll">
+        <svg class="leaf" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C7 2 3 6 3 11c0 6 5 11 9 11s9-5 9-11c0-5-4-9-9-9zm0 2c3.9 0 7 3.1 7 7 0 4.5-3.5 8.5-6.5 9C12 15 10 10 8 7c1-1.8 2.6-3 4-3z"/>
+        </svg>
+        <div class="fortune-text" id="fortune-text">&nbsp;</div>
+        <div class="fortune-meta" id="fortune-meta">&nbsp;</div>
+        <div class="close-hint">click anywhere to close</div>
+      </div>
+    </div>
+
+    <!-- loading overlay -->
+    <div class="loading" id="loading">
+      <div>the garden is waking</div>
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      <div id="loading-hint"></div>
+    </div>
+  </div>
+
+  <!-- ————————————————————————————————————————
+       SHARED CAMERA PREVIEW
+       Lives outside both views so it never remounts.
+       Hidden while in-landing, fades in on entry, stays in-garden.
+       ———————————————————————————————————————— -->
+  <figure class="cam-preview" id="cam-preview" aria-label="live camera preview">
+    <video id="camera-video" autoplay muted playsinline></video>
+    <canvas id="camera-canvas"></canvas>
+    <button class="camera-toggle" id="camera-toggle" aria-label="toggle camera" title="enable camera">×</button>
+  </figure>
+
+  <!-- ————————————————————————————————————————
+       safety net: loading overlay auto-hides
+       ———————————————————————————————————————— -->
+  <script>
+    (function () {
+      var loadingEl = null, hintEl = null;
+      function el() {
+        loadingEl = loadingEl || document.getElementById('loading');
+        hintEl    = hintEl    || document.getElementById('loading-hint');
+      }
+      setTimeout(function () { el(); if (loadingEl) loadingEl.classList.add('hidden'); }, 2500);
+      setTimeout(function () {
+        el();
+        if (!hintEl || !loadingEl || loadingEl.classList.contains('hidden')) return;
+        hintEl.textContent = (location.protocol === 'file:')
+          ? 'open this page via a local server, not a file:// path'
+          : 'check the browser console for errors';
+      }, 1500);
+      window.addEventListener('error', function (ev) {
+        el(); if (loadingEl) loadingEl.classList.add('hidden');
+        console.warn('[a common bloom] runtime error:', ev.message || ev.error);
+      });
+      window.addEventListener('unhandledrejection', function (ev) {
+        el(); if (loadingEl) loadingEl.classList.add('hidden');
+        console.warn('[a common bloom] unhandled rejection:', ev.reason);
+      });
+    })();
+  </script>
+
+  <!-- info overlay toggle (only relevant once in-garden) -->
+  <script>
+    (function () {
+      const btn = document.getElementById('info-btn');
+      const overlay = document.getElementById('info-overlay');
+      if (!btn || !overlay) return;
+      function setOpen(open) {
+        overlay.classList.toggle('visible', open);
+        overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.classList.toggle('active', open);
+      }
+      btn.addEventListener('click', () => setOpen(!overlay.classList.contains('visible')));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    })();
+  </script>
+
+  <!-- Tone.js — audio starts on first user gesture -->
+  <script defer src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
+
+  <!-- app modules (garden, audio, gestures, camera, MediaPipe lazy-loaded by main.js) -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

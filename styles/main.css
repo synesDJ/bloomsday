@@ -1,0 +1,1302 @@
+/* a common bloom — shared styles
+   all text uses Cormorant Garamond for a consistent elegant, minimal feel. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
+
+:root {
+  --bg-void:    #050617;
+  --bg-deep:    #09091f;   /* main ground */
+  --bg-surface: #11102b;
+  --bg-card:    rgba(16, 18, 44, 0.78);
+  --bg-border:  rgba(135, 245, 255, 0.18);
+
+  --ink-primary:   #d6f4ee;
+  --ink-secondary: #a9c9d8;
+  --ink-muted:     #7694aa;
+  --ink-faint:     #51677f;
+
+  --flower-cherry:    #f6b9cf;
+  --flower-iris:      #f4a78c;
+  --flower-lotus:     #b6d7ef;
+  --flower-wild:      #b9e8a8;
+  --flower-dandelion: #f6e17a;
+  --flower-sunflower: #f5b942;
+  --flower-rose:      #e84070;
+  --flower-orchid:    #b888ff;
+  --flower-tulip:     #ff5544;
+  --flower-poppy:     #ff7744;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-mono:    'Cormorant Garamond', serif; /* kept for compat — uses display font */
+}
+
+body.realm-blues {
+  --bg-void:    #050617;
+  --bg-deep:    #09091f;
+  --bg-surface: #11102b;
+  --bg-card:    rgba(16, 18, 44, 0.78);
+  --bg-border:  rgba(135, 245, 255, 0.18);
+  --ink-primary:   #d6f4ee;
+  --ink-secondary: #a9c9d8;
+  --ink-muted:     #7694aa;
+  --ink-faint:     #51677f;
+  --realm-glow: rgba(135, 245, 255, 0.12);
+  --realm-ground: rgba(76, 255, 208, 0.10);
+  --realm-wash-a: rgba(176, 98, 255, 0.08);
+  --realm-wash-b: rgba(104, 218, 255, 0.08);
+}
+
+body.realm-pentatonic {
+  --bg-void:    #07120b;
+  --bg-deep:    #102419;
+  --bg-surface: #1b3521;
+  --bg-card:    rgba(17, 35, 18, 0.76);
+  --bg-border:  rgba(236, 226, 139, 0.24);
+  --ink-primary:   #f2f0cf;
+  --ink-secondary: #dfdcae;
+  --ink-muted:     #abbf84;
+  --ink-faint:     #77885b;
+  --realm-glow: rgba(255, 229, 119, 0.16);
+  --realm-ground: rgba(210, 229, 118, 0.12);
+  --realm-wash-a: rgba(238, 219, 112, 0.10);
+  --realm-wash-b: rgba(93, 156, 70, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-deep);
+  color: var(--ink-primary);
+  font-family: var(--font-display);
+  font-weight: 300;
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, input {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* subtle radial atmosphere used on both pages */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 112%, var(--realm-ground), transparent 62%),
+    radial-gradient(ellipse at 12% 24%, var(--realm-wash-a), transparent 54%),
+    radial-gradient(ellipse at 88% 36%, var(--realm-wash-b), transparent 56%);
+}
+
+/* ——————————————————————————————————————————
+   view states (single-page SPA: body toggles class)
+   —————————————————————————————————————————— */
+
+/* both views live in the DOM at once; we fade between them */
+.landing-view,
+.garden-page {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* LANDING state: garden hidden, landing visible, cam-preview hidden */
+body.in-landing .landing-view {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+body.in-landing .garden-page {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+/* GARDEN state: landing faded/gone, garden visible */
+body.in-garden .landing-view {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  visibility: hidden;
+}
+body.in-garden .garden-page {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* shared camera preview: hidden until camera is acquired (body.cam-on) */
+.cam-preview {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+body.cam-on .cam-preview {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ——————————————————————————————————————————
+   landing view (inside index.html)
+   —————————————————————————————————————————— */
+
+.landing-view {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 6vh 8vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.landing-view h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(3.2rem, 10vw, 7.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  color: var(--ink-primary);
+  max-width: 12ch;
+  margin-bottom: 2.5rem;
+}
+
+.realm-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  width: min(440px, 82vw);
+  margin-bottom: 1.3rem;
+  padding: 0.25rem;
+  border: 0.5px solid rgba(135, 245, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(8, 12, 32, 0.36);
+}
+
+.realm-btn {
+  min-width: 0;
+  padding: 0.55rem 0.85rem 0.62rem;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1;
+  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.realm-btn:hover,
+.realm-btn.active {
+  color: var(--ink-primary);
+  background: rgba(78, 48, 126, 0.46);
+  box-shadow: 0 0 22px var(--realm-glow);
+}
+
+body.realm-pentatonic .realm-btn:hover,
+body.realm-pentatonic .realm-btn.active {
+  background: rgba(88, 110, 42, 0.46);
+}
+
+/* sparse, glowing CTA pill */
+.landing-view .cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.75rem 1.6rem 0.85rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.2rem;
+  color: var(--ink-primary);
+  background: transparent;
+  border: 0.5px solid var(--bg-border);
+  border-radius: 999px;
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.landing-view .cta .cta-arrow { transition: transform 0.4s ease; display: inline-block; }
+
+.landing-view .cta:hover {
+  background: rgba(185, 232, 168, 0.06);
+  border-color: rgba(185, 232, 168, 0.35);
+}
+.landing-view .cta:hover .cta-arrow { transform: translateX(4px); }
+
+.landing-view .cta:disabled { opacity: 0.6; cursor: wait; }
+
+.cam-prompt {
+  margin-top: 1.4rem;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-muted);
+  min-height: 1.5em;
+}
+
+/* corner bouquet — four "stem + bulb" decorations, slowly sway */
+.corner-bouquet {
+  position: absolute;
+  right: 8vw;
+  bottom: 0;
+  height: 260px;
+  width: 240px;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.corner-bouquet.hidden {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.corner-bouquet .stem {
+  position: relative;
+  width: 16px;
+  height: var(--h);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  animation: sway 6s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.corner-bouquet .stem::before {
+  content: "";
+  position: absolute;
+  top: 18px; bottom: 0; left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(120,170,120,0.6), rgba(120,170,120,0));
+  transform: translateX(-50%);
+}
+
+.corner-bouquet .bulb {
+  width: 28px;
+  height: 36px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+  filter: blur(0.3px);
+  box-shadow:
+    0 0 18px 2px currentColor,
+    inset 0 -4px 8px rgba(0,0,0,0.15);
+}
+.corner-bouquet .bulb.tall  { width: 22px; height: 48px; }
+.corner-bouquet .bulb.small { width: 22px; height: 24px; }
+
+.corner-bouquet .stem.cherry    { color: var(--flower-cherry); }
+.corner-bouquet .stem.iris      { color: var(--flower-iris); }
+.corner-bouquet .stem.lotus     { color: var(--flower-lotus); }
+.corner-bouquet .stem.dandelion { color: var(--flower-dandelion); }
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate( 2deg); }
+}
+
+/* ——————————————————————————————————————————
+   garden page (garden.html)
+   —————————————————————————————————————————— */
+
+.garden-page {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 78%, rgba(34, 72, 92, 0.42), transparent 62%),
+    linear-gradient(180deg, #070719 0%, #111034 48%, #041114 100%);
+}
+
+body.realm-pentatonic .garden-page {
+  background:
+    radial-gradient(ellipse at 38% 22%, rgba(255, 230, 132, 0.20), transparent 45%),
+    radial-gradient(ellipse at 54% 86%, rgba(58, 99, 42, 0.55), transparent 66%),
+    linear-gradient(180deg, #c3cfae 0%, #637c4b 42%, #102b18 100%);
+}
+
+#garden-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: block;
+}
+
+/* meta header (top-left) */
+.meta-header {
+  position: absolute;
+  top: 1.8rem;
+  left: 2rem;
+  z-index: 6;
+  color: var(--ink-muted);
+  padding: 0.9rem 1.05rem 0.95rem;
+  border: 0.5px solid rgba(214, 244, 238, 0.14);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(135, 245, 255, 0.12), transparent 62%),
+    rgba(5, 6, 23, 0.52);
+  box-shadow: 0 0 34px rgba(5, 6, 23, 0.46), 0 0 24px var(--realm-glow);
+  backdrop-filter: blur(10px);
+}
+
+.realm-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+  padding: 0.24rem 0.72rem 0.32rem;
+  border: 0.5px solid var(--bg-border);
+  border-radius: 999px;
+  background: rgba(8, 12, 32, 0.36);
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1;
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.realm-back:hover {
+  color: var(--ink-primary);
+  border-color: var(--bg-border);
+  background: rgba(62, 35, 108, 0.36);
+  box-shadow: 0 0 18px var(--realm-glow);
+}
+
+body.realm-pentatonic .realm-back {
+  background: rgba(20, 45, 18, 0.44);
+}
+
+body.realm-pentatonic .realm-back:hover {
+  background: rgba(86, 108, 44, 0.40);
+}
+
+.meta-header .title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.42rem;
+  color: var(--ink-primary);
+  letter-spacing: 0;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 16px rgba(214, 244, 238, 0.28), 0 1px 8px rgba(0, 0, 0, 0.58);
+}
+
+.meta-header .counts {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.02rem;
+  color: var(--ink-secondary);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.68);
+}
+.meta-header .counts span { color: var(--ink-primary); }
+
+.garden-controls {
+  position: absolute;
+  top: 1.8rem;
+  left: 19.8rem;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 172px;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+/* info button (top-right) */
+.info-btn {
+  position: absolute;
+  top: 1.6rem;
+  right: 2rem;
+  z-index: 7;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(8, 12, 32, 0.62);
+  border: 0.5px solid rgba(214, 244, 238, 0.24);
+  box-shadow: 0 0 24px rgba(5, 6, 23, 0.48), 0 0 20px var(--realm-glow);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-btn:hover,
+.info-btn.active {
+  background: rgba(185, 232, 168, 0.08);
+  border-color: rgba(185, 232, 168, 0.4);
+}
+
+.info-btn .info-glyph {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.35rem;
+  color: var(--ink-secondary);
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+/* selector (top-left, below meta-header) */
+.selector {
+  position: absolute;
+  top: 9.85rem;
+  left: 2rem;
+  z-index: 5;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 0.5px solid var(--bg-border);
+  border-radius: 16px;
+  padding: 0.9rem 1rem 0.95rem;
+  width: 336px;
+}
+
+.selector .label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.08rem;
+  color: var(--ink-primary);
+  margin-bottom: 0.72rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* compact flower grid */
+.selector .swatches {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.62rem 0.52rem;
+  align-items: start;
+}
+
+.swatch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  color: var(--ink-primary);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* alternating offsets for hand-placed feel */
+.swatch:nth-child(odd)  { transform: translateY(-2px); }
+.swatch:nth-child(even) { transform: translateY(3px);  }
+
+.swatch .oval {
+  display: block;
+  width: 24px;
+  height: 31px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.9;
+  box-shadow:
+    0 0 18px 2px currentColor,
+    inset 0 -5px 10px rgba(0,0,0,0.20);
+  transition: transform 0.35s ease, opacity 0.35s ease, box-shadow 0.35s ease;
+}
+
+.swatch:hover .oval,
+.swatch.active .oval {
+  transform: translateY(-4px) scale(1.08);
+  opacity: 1;
+}
+
+.swatch .name {
+  margin-top: 0.42rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.74rem;
+  color: var(--ink-secondary);
+  letter-spacing: 0;
+  line-height: 0.98;
+  min-height: 1.95em;
+  text-align: center;
+  text-shadow: 0 1px 7px rgba(0, 0, 0, 0.60);
+}
+
+.swatch:hover .name,
+.swatch.active .name { color: var(--ink-primary); }
+
+.swatch.cherry    { color: var(--flower-cherry); }
+.swatch.iris      { color: var(--flower-iris); }
+.swatch.lotus     { color: var(--flower-lotus); }
+.swatch.wild      { color: var(--flower-wild); }
+.swatch.dandelion { color: var(--flower-dandelion); }
+.swatch.sunflower { color: var(--flower-sunflower); }
+.swatch.rose      { color: var(--flower-rose); }
+.swatch.orchid    { color: var(--flower-orchid); }
+.swatch.tulip     { color: var(--flower-tulip); }
+.swatch.poppy     { color: var(--flower-poppy); }
+.swatch.pink-lily { color: #ff9ccc; }
+.swatch.moon-iris { color: #8be8ff; }
+
+.voice-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.78rem;
+  padding-top: 0.72rem;
+  border-top: 0.5px solid rgba(135, 245, 255, 0.16);
+}
+
+.voice-btn {
+  min-width: 0;
+  padding: 0.38rem 0.5rem 0.43rem;
+  border: 0.5px solid rgba(135, 245, 255, 0.18);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1;
+  background: rgba(8, 12, 32, 0.45);
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.voice-btn:hover,
+.voice-btn.active {
+  color: var(--ink-primary);
+  border-color: rgba(135, 245, 255, 0.42);
+  background: rgba(62, 35, 108, 0.40);
+  box-shadow: 0 0 16px var(--realm-glow);
+}
+
+body.realm-pentatonic .voice-btn {
+  background: rgba(14, 32, 16, 0.42);
+  border-color: rgba(236, 226, 139, 0.18);
+}
+
+body.realm-pentatonic .voice-btn:hover,
+body.realm-pentatonic .voice-btn.active {
+  border-color: rgba(244, 229, 128, 0.42);
+  background: rgba(78, 96, 40, 0.42);
+}
+
+.loop-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-height: 44px;
+  padding: 0.55rem 0.7rem 0.6rem;
+  border: 0.5px solid rgba(214, 244, 238, 0.14);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(135, 245, 255, 0.10), transparent 62%),
+    rgba(5, 6, 23, 0.48);
+  box-shadow: 0 0 24px rgba(5, 6, 23, 0.38), 0 0 18px var(--realm-glow);
+  backdrop-filter: blur(9px);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.loop-switch-copy {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.loop-switch-title {
+  color: var(--ink-primary);
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1;
+}
+
+.loop-switch-state {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.loop-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loop-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 22px;
+  border: 0.5px solid rgba(135, 245, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(8, 12, 32, 0.56);
+  box-shadow: inset 0 0 14px rgba(0,0,0,0.22);
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.loop-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(138, 173, 144, 0.78);
+  box-shadow: 0 0 10px rgba(135, 245, 255, 0.10);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.loop-switch input:checked + .loop-switch-track {
+  border-color: rgba(135, 245, 255, 0.52);
+  background: rgba(62, 35, 108, 0.42);
+  box-shadow: 0 0 16px var(--realm-glow), inset 0 0 14px rgba(0,0,0,0.18);
+}
+
+.loop-switch input:checked + .loop-switch-track .loop-switch-thumb {
+  transform: translateX(18px);
+  background: var(--ink-primary);
+  box-shadow: 0 0 14px var(--realm-glow);
+}
+
+.loop-switch:focus-within .loop-switch-track {
+  outline: 1px solid var(--ink-primary);
+  outline-offset: 3px;
+}
+
+body.realm-pentatonic .loop-switch-track {
+  border-color: rgba(236, 226, 139, 0.24);
+  background: rgba(14, 32, 16, 0.48);
+}
+
+body.realm-pentatonic .loop-switch input:checked + .loop-switch-track {
+  border-color: rgba(244, 229, 128, 0.52);
+  background: rgba(78, 96, 40, 0.42);
+}
+
+.hardware-bridge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.32rem;
+  min-height: 44px;
+  padding: 0.55rem 0.65rem 0.55rem;
+  border: 0.5px solid rgba(214, 244, 238, 0.14);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(135, 245, 255, 0.10), transparent 62%),
+    rgba(5, 6, 23, 0.48);
+  box-shadow: 0 0 24px rgba(5, 6, 23, 0.38), 0 0 18px var(--realm-glow);
+  backdrop-filter: blur(9px);
+}
+
+.serial-btn {
+  width: 100%;
+  min-width: 0;
+  padding: 0.32rem 0.45rem 0.37rem;
+  border: 0.5px solid rgba(135, 245, 255, 0.22);
+  border-radius: 999px;
+  color: var(--ink-secondary);
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-style: italic;
+  line-height: 1;
+  background: rgba(8, 12, 32, 0.48);
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.serial-btn:hover,
+.serial-btn.connected {
+  color: var(--ink-primary);
+  border-color: rgba(135, 245, 255, 0.42);
+  background: rgba(62, 35, 108, 0.40);
+  box-shadow: 0 0 16px var(--realm-glow);
+}
+
+.serial-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.serial-status {
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1;
+  text-align: center;
+}
+
+body.realm-pentatonic .hardware-bridge {
+  border-top-color: rgba(236, 226, 139, 0.14);
+}
+
+body.realm-pentatonic .serial-btn {
+  background: rgba(14, 32, 16, 0.42);
+  border-color: rgba(236, 226, 139, 0.18);
+}
+
+body.realm-pentatonic .serial-btn:hover,
+body.realm-pentatonic .serial-btn.connected {
+  border-color: rgba(244, 229, 128, 0.42);
+  background: rgba(78, 96, 40, 0.42);
+}
+
+.reset-garden {
+  position: absolute;
+  right: 6.5rem;
+  bottom: 13.15rem;
+  z-index: 5;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0.5px solid rgba(214, 244, 238, 0.38);
+  border-radius: 50%;
+  color: rgba(214, 244, 238, 0.82);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-style: italic;
+  line-height: 1;
+  background: rgba(12, 18, 38, 0.62);
+  box-shadow: inset 0 0 18px rgba(135, 245, 255, 0.08), 0 0 18px rgba(135, 245, 255, 0.12);
+  opacity: 0.72;
+  transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.reset-garden:hover,
+.reset-garden:focus-visible {
+  opacity: 1;
+  transform: translateY(-2px);
+  border-color: rgba(135, 245, 255, 0.52);
+  background: rgba(62, 35, 108, 0.40);
+  box-shadow: 0 0 18px var(--realm-glow), inset 0 0 18px rgba(135, 245, 255, 0.10);
+}
+
+body.realm-pentatonic .reset-garden {
+  background: rgba(14, 32, 16, 0.54);
+  border-color: rgba(236, 226, 139, 0.30);
+}
+
+body.realm-pentatonic .reset-garden:hover,
+body.realm-pentatonic .reset-garden:focus-visible {
+  border-color: rgba(244, 229, 128, 0.52);
+  background: rgba(78, 96, 40, 0.42);
+}
+
+.trash-bin {
+  position: absolute;
+  right: 2rem;
+  bottom: 12.5rem;
+  z-index: 5;
+  width: 62px;
+  height: 72px;
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
+}
+
+.trash-bin.visible,
+.trash-bin.hot {
+  opacity: 1;
+}
+
+.trash-bin.hot {
+  transform: translateY(-3px) scale(1.08);
+  filter: drop-shadow(0 0 18px rgba(255, 156, 204, 0.45));
+}
+
+.trash-lid,
+.trash-body {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid rgba(214, 244, 238, 0.56);
+  background: rgba(12, 18, 38, 0.62);
+  box-shadow: inset 0 0 18px rgba(135, 245, 255, 0.08), 0 0 18px rgba(135, 245, 255, 0.12);
+}
+
+.trash-lid {
+  top: 4px;
+  width: 42px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.trash-body {
+  bottom: 4px;
+  width: 40px;
+  height: 48px;
+  border-radius: 5px 5px 12px 12px;
+}
+
+/* live camera preview, bottom-right — used on both landing and garden */
+.cam-preview {
+  position: absolute;
+  bottom: 1.4rem;
+  right: 1.6rem;
+  z-index: 6;
+  width: 260px;
+  height: 170px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 0.5px solid var(--bg-border);
+  background: rgba(6, 8, 24, 0.9);
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.45),
+    0 0 34px rgba(95, 230, 255, 0.12);
+}
+
+/* raw video fills the box, mirrored so it reads like a hand-held mirror */
+#camera-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  pointer-events: none;
+  display: block;
+}
+
+/* optional posterize canvas sits on top of the video, soft blend */
+#camera-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  mix-blend-mode: screen;
+  opacity: 0.4;
+  transform: scaleX(-1);
+  display: block;
+  pointer-events: none;
+}
+
+/* subtle × in the top-right of the preview box — appears on hover only */
+.cam-preview .camera-toggle {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.55rem;
+  z-index: 4;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1;
+  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.25s ease;
+}
+
+.cam-preview:hover .camera-toggle { opacity: 1; }
+.cam-preview .camera-toggle:hover { background: rgba(0,0,0,0.6); }
+.cam-preview .camera-toggle.on    { color: var(--flower-wild); }
+
+/* hint — used as a status/message line (subtle, bottom-center, above camera) */
+.hint {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.12rem;
+  color: var(--ink-primary);
+  max-width: 40rem;
+  text-align: center;
+  pointer-events: none;
+  min-height: 1.4em;
+  padding: 0.42rem 0.9rem 0.5rem;
+  border: 0.5px solid rgba(214, 244, 238, 0.14);
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(135, 245, 255, 0.12), transparent 72%),
+    rgba(5, 6, 23, 0.50);
+  box-shadow: 0 0 30px rgba(5, 6, 23, 0.50), 0 0 20px var(--realm-glow);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+}
+.hint strong { font-weight: 600; color: var(--ink-primary); font-style: italic; }
+.hint:empty { display: none; }
+
+/* ——————————————————————————————————————————
+   corner zone labels — subtle hint of which hand does what
+   —————————————————————————————————————————— */
+.zone-label {
+  position: absolute;
+  z-index: 4;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+  pointer-events: none;
+  opacity: 0.9;
+  padding: 0.34rem 0.62rem 0.42rem;
+  border: 0.5px solid rgba(214, 244, 238, 0.12);
+  border-radius: 999px;
+  background: rgba(5, 6, 23, 0.46);
+  box-shadow: 0 0 24px rgba(5, 6, 23, 0.42), 0 0 16px var(--realm-glow);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(7px);
+  transition: opacity 0.4s ease;
+}
+.zone-grow {
+  top: 1.95rem;
+  right: 6.6rem;          /* clear of the (i) button */
+  text-align: right;
+}
+.zone-bloom {
+  top: 4.4rem;
+  left: 2rem;             /* below the title, above the selector */
+}
+.zone-pluck {
+  bottom: 4.6rem;
+  left: 2rem;             /* above the hint line, away from camera preview */
+  line-height: 1.55;
+}
+.zone-label::before {
+  content: "·";
+  display: inline-block;
+  margin-right: 0.4em;
+  color: var(--ink-primary);
+  opacity: 0.92;
+}
+.zone-grow::before  { color: var(--flower-cherry); }
+.zone-bloom::before { color: var(--flower-lotus); }
+.zone-pluck::before { color: var(--flower-wild); }
+
+/* hidden when camera is off — labels only mean something with hands in frame */
+body:not(.cam-on) .zone-label { opacity: 0; }
+
+/* ——————————————————————————————————————————
+   info overlay (triggered by (i) button) — compact, anchored under (i)
+   —————————————————————————————————————————— */
+
+/* Sits to the LEFT of the info-btn at the same vertical baseline. */
+.info-overlay {
+  position: absolute;
+  top: 1.6rem;
+  right: 4rem;          /* (i) button is at right: 2rem, width 44px */
+  z-index: 15;
+  width: 360px;
+  padding: 1rem 1.15rem 1.05rem;
+  background: rgba(10, 18, 9, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 0.5px solid var(--bg-border);
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+  opacity: 0;
+  transform: translateX(8px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+
+.info-overlay.visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+/* tiny arrow pointing right at the (i) button */
+.info-arrow {
+  position: absolute;
+  top: 16px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: rgba(10, 18, 9, 0.92);
+  border-top:    0.5px solid var(--bg-border);
+  border-right:  0.5px solid var(--bg-border);
+  transform: rotate(45deg);
+}
+
+.info-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  color: var(--ink-secondary);
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 0.5px solid var(--bg-border);
+}
+
+.gesture-legend {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.gesture-legend .step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0;
+}
+
+.gesture-legend .step-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  color: var(--ink-faint);
+  padding-top: 0.1rem;
+  flex-shrink: 0;
+  width: 22px;
+}
+
+.gesture-legend .step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.gesture-legend .step-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  color: var(--ink-primary);
+  line-height: 1.3;
+}
+
+.gesture-legend .step-desc {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--ink-secondary);
+}
+
+.gesture-legend .step:nth-child(1) .step-num { color: var(--flower-cherry); }
+.gesture-legend .step:nth-child(2) .step-num { color: var(--flower-lotus); }
+.gesture-legend .step:nth-child(3) .step-num { color: var(--flower-iris); }
+.gesture-legend .step:nth-child(4) .step-num { color: var(--flower-wild); }
+
+@media (max-width: 520px) {
+  .info-overlay { width: 240px; right: 1rem; }
+  .zone-bloom   { left: 1rem; top: 4.6rem; }
+  .zone-grow    { right: 1rem; top: 4.6rem; }
+  .zone-pluck   { left: 1rem; bottom: 3.4rem; }
+}
+
+@media (max-width: 980px) {
+  .garden-controls {
+    top: 7.4rem;
+    left: 2rem;
+    grid-template-columns: 172px;
+  }
+
+  .selector {
+    top: 12.6rem;
+    width: 336px;
+  }
+
+  .selector .swatches {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.62rem 0.52rem;
+  }
+
+  .swatch .oval {
+    width: 24px;
+    height: 31px;
+  }
+}
+
+@media (max-width: 640px) {
+  .meta-header {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .garden-controls {
+    top: 7.9rem;
+    left: 1rem;
+    right: 1rem;
+    grid-template-columns: minmax(0, 172px);
+  }
+
+  .selector {
+    top: 12.9rem;
+    left: 1rem;
+    width: min(336px, calc(100vw - 2rem));
+    padding: 1rem;
+  }
+
+  .selector .swatches {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .garden-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .selector {
+    top: 16.1rem;
+  }
+}
+
+/* ——————————————————————————————————————————
+   fortune scroll overlay
+   —————————————————————————————————————————— */
+
+.fortune-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(10, 18, 9, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.fortune-overlay.visible { opacity: 1; pointer-events: auto; }
+
+.scroll {
+  position: relative;
+  width: min(440px, 86vw);
+  padding: 3rem 2.4rem 2.6rem;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, transparent 12%, transparent 88%, rgba(0,0,0,0.06) 100%),
+    repeating-linear-gradient(to bottom, rgba(120, 80, 40, 0.06) 0px, rgba(120, 80, 40, 0.06) 1px, transparent 1px, transparent 5px),
+    #d7b880;
+  color: #3a2810;
+  text-align: center;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  border-radius: 3px;
+}
+
+.fortune-overlay.visible .scroll { transform: scaleY(1); }
+
+.scroll::before, .scroll::after {
+  content: "";
+  position: absolute;
+  left: -12px; right: -12px;
+  height: 18px;
+  background: #9c8253;
+  border-radius: 18px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+.scroll::before { top: -9px; }
+.scroll::after  { bottom: -9px; }
+
+.scroll .fortune-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+  color: #2a1a0a;
+}
+
+.scroll .fortune-meta {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.95rem;
+  color: #6b4a28;
+  line-height: 1.5;
+}
+
+.scroll .leaf {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 22px; height: 22px;
+  color: #5a7035;
+  opacity: 0.7;
+}
+
+.scroll .close-hint {
+  margin-top: 1.5rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.85rem;
+  color: #6b4a28;
+  opacity: 0.75;
+}
+
+/* ——————————————————————————————————————————
+   loading state
+   —————————————————————————————————————————— */
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--bg-deep);
+  z-index: 30;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.25rem;
+  color: var(--ink-secondary);
+  transition: opacity 0.8s ease;
+}
+
+.loading.hidden { opacity: 0; pointer-events: none; }
+
+.loading .dot-row span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--ink-faint);
+  border-radius: 50%;
+  margin: 0 3px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.loading .dot-row span:nth-child(2) { animation-delay: 0.2s; }
+.loading .dot-row span:nth-child(3) { animation-delay: 0.4s; }
+
+#loading-hint {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.95rem;
+  color: var(--ink-faint);
+  margin-top: 1rem;
+  min-height: 1.5em;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.2); }
+}
