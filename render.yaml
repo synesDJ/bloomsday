@@ -2,9 +2,5 @@ services:
   - type: web
     name: bloomsday
     runtime: static
-    buildCommand: ""
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    buildCommand: mkdir -p public && cp index.html garden.html public/ && cp -R src styles public/
+    staticPublishPath: public
