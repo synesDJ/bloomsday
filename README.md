@@ -1,6 +1,6 @@
 # 🌸 a common bloom
 
-> *a shared digital garden grown by hands — every visitor leaves a flower, every flower adds a voice*
+> *a shared digital garden grown by hands. every visitor leaves a flower, every flower adds a voice!*
 
 ## concept
 
